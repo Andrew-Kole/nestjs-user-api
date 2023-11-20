@@ -32,4 +32,7 @@ export class UserService {
         return !!existingUser;
     }
 
+    async getUserById(id: number): Promise<UserEntity | undefined> {
+        return await this.userRepository.findOne({where: { id }});
+    }
 }
