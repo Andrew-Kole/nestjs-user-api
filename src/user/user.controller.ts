@@ -2,7 +2,6 @@ import {Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res} from "
 import {Response} from 'express'
 import {UserService} from "./user.service";
 import {CreateUserDto, UpdateUserDto} from "./user.dto";
-import {ExceptionMessageEnum} from "../common/enums/exception.message.enum";
 
 
 @Controller('user')
