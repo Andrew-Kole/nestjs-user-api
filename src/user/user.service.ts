@@ -45,18 +45,29 @@ export class UserService {
         return user;
     }
 
+    private async getUserByIdForUpdate(id: number): Promise<UserEntity | undefined> {
+        return await this.userRepository.findOne( {where: { id }, relations: ['status'] });
+    }
+
     async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<UserEntity | undefined> {
         try {
-            const user = await this.getUserById(id);
+            const user = await this.getUserByIdForUpdate(id);
             if (!user || user.status.isDeleted) {
                 throw new NotFoundException(ExceptionMessageEnum.USER_NOT_FOUND);
             }
-            if (!user.status.isActive) {
+            if (!user.status.isActive && !updateUserDto.isActive) {
                 throw new ForbiddenException(ExceptionMessageEnum.USER_IS_BANNED);
             }
             Object.assign(user, updateUserDto);
             if (updateUserDto.password) {
                 user.password = await PasswordUtils.hashPassword(updateUserDto.password);
+            }
+
+            if (updateUserDto.role) {
+                user.status.role = updateUserDto.role;
+            }
+            if (updateUserDto.isActive) {
+                user.status.isActive = updateUserDto.isActive;
             }
             return await this.userRepository.save(user);
         }

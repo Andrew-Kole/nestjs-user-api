@@ -1,5 +1,5 @@
-import {Column, Entity, OneToOne, PrimaryGeneratedColumn} from "typeorm";
-import {UserRoleEnum} from "../../common/enums/user/user.role.enum";
+import {Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {UserRoleEnum} from "../../common/enums/user.role.enum";
 import {UserEntity} from "./user.entity";
 
 @Entity('user_status')
@@ -16,6 +16,9 @@ export class UserStatusEntity{
     @Column({default: true})
     isActive: boolean;
 
-    @OneToOne(() => UserEntity, (user) => user.status)
+    @Column({nullable: true})
+    refreshToken: string
+
+    @OneToOne(() => UserEntity, (user) => user.status, )
     user: UserEntity;
 }

@@ -1,7 +1,12 @@
-import {Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res} from "@nestjs/common";
+import {Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res, UseGuards} from "@nestjs/common";
 import {Response} from 'express'
 import {UserService} from "./user.service";
 import {CreateUserDto, UpdateUserDto} from "./user.dto";
+import {JwtAuthGuard} from "../common/auth-config/guards/jwt-auth.guard";
+import {PermissionGuard} from "../common/auth-config/guards/permission.guard";
+import {UsePermissions} from "../common/auth-config/decorators/user-permissions.decorator";
+import {UserUpdatePermissions} from "../common/auth-config/permissions/user.update.permissions";
+import {UserDeletePermissions} from "../common/auth-config/permissions/user.delete.permissions";
 
 
 @Controller('user')
@@ -25,6 +30,7 @@ export class UserController {
     }
 
     @Get(':id')
+    @UseGuards(JwtAuthGuard)
     async getUserById(@Param('id') id: string, @Res() res: Response): Promise<void>{
         const user = await this.userService.getUserById(Number(id));
         const { password, status, ...userWithoutSensitiveInfo} = user;
@@ -36,6 +42,8 @@ export class UserController {
     }
 
     @Put(':id')
+    @UseGuards(JwtAuthGuard, PermissionGuard)
+    @UsePermissions(UserUpdatePermissions)
     async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Res() res: Response): Promise<void> {
         try {
             const updatedUser = await this.userService.updateUser(Number(id), updateUserDto);
@@ -52,6 +60,8 @@ export class UserController {
     }
 
     @Delete(':id')
+    @UseGuards(JwtAuthGuard, PermissionGuard)
+    @UsePermissions(UserDeletePermissions)
     async deleteUser(@Param('id') id: string, @Res() res: Response): Promise<void> {
         try{
             await this.userService.deleteUser(Number(id));
