@@ -1,4 +1,4 @@
-import {Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, OneToOne, PrimaryGeneratedColumn} from "typeorm";
 import {UserRoleEnum} from "../../common/enums/user.role.enum";
 import {UserEntity} from "./user.entity";
 

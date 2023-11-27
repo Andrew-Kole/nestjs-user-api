@@ -7,11 +7,6 @@ export class UserDeletePermissions{
         if (userId === targetUserId) {
             return true;
         }
-        else if (userRole === UserRoleEnum.ADMIN && (targetUserRole === UserRoleEnum.BASIC || UserRoleEnum.MODER)) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        else return !!(userRole === UserRoleEnum.ADMIN && (targetUserRole === UserRoleEnum.BASIC || UserRoleEnum.MODER));
     }
 }
