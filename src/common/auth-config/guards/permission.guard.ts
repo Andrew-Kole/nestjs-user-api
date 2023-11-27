@@ -5,7 +5,6 @@ import {UserStatusEntity} from "../../../user/entities/user-status.entity";
 import {Repository} from "typeorm";
 import {UserRoleEnum} from "../../enums/user.role.enum";
 import {ExceptionMessageEnum} from "../../enums/exception.message.enum";
-import {UserUpdatePermissions} from "../permissions/user.update.permissions";
 
 @Injectable()
 export class PermissionGuard implements CanActivate{
