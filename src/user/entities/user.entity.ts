@@ -5,9 +5,10 @@ import {
     CreateDateColumn,
     OneToOne,
     JoinColumn,
-    UpdateDateColumn, DeleteDateColumn, BeforeUpdate
+    UpdateDateColumn, DeleteDateColumn, BeforeUpdate, OneToMany
 } from "typeorm";
 import {UserStatusEntity} from "./user-status.entity";
+import {VoteEntity} from "../../vote/vote.entity";
 
 
 @Entity('users')
@@ -47,4 +48,10 @@ export class UserEntity {
             this.status.isDeleted = true;
         }
     }
+
+    @Column({ type: 'int', default: 0 })
+    rating: number;
+
+    @OneToMany(() => VoteEntity, (vote) => vote.profile)
+    votes: VoteEntity[]
 }

@@ -1,10 +1,10 @@
 import {Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res, UseGuards} from "@nestjs/common";
-import {Response} from 'express'
+import {Response} from 'express';
 import {UserService} from "./user.service";
 import {CreateUserDto, UpdateUserDto} from "./user.dto";
 import {JwtAuthGuard} from "../common/auth-config/guards/jwt-auth.guard";
 import {PermissionGuard} from "../common/auth-config/guards/permission.guard";
-import {UsePermissions} from "../common/auth-config/decorators/user-permissions.decorator";
+import {UsePermissions} from "../common/auth-config/decorators/permissions.decorator";
 import {UserUpdatePermissions} from "../common/auth-config/permissions/user.update.permissions";
 import {UserDeletePermissions} from "../common/auth-config/permissions/user.delete.permissions";
 

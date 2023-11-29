@@ -1,6 +1,6 @@
 import {IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString, Matches, MinLength} from "class-validator";
 import {ValidationFailed} from "../common/enums/validator.message.enum";
-import {passwordRegex} from "../common/regex-patterns/regex.pattern";
+import {passwordRegex} from "../common/regex-patterns/password.regex";
 import {UserRoleEnum} from "../common/enums/user.role.enum";
 
 export class CreateUserDto {
