@@ -7,7 +7,7 @@ import {UserRoleEnum} from "../../enums/user.role.enum";
 import {ExceptionMessageEnum} from "../../enums/exception.message.enum";
 
 @Injectable()
-export class PermissionGuard implements CanActivate{
+export class UserPermissionGuard implements CanActivate{
     constructor(
         private readonly reflector: Reflector,
         @InjectRepository(UserStatusEntity)

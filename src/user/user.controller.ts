@@ -3,10 +3,10 @@ import {Response} from 'express';
 import {UserService} from "./user.service";
 import {CreateUserDto, UpdateUserDto} from "./user.dto";
 import {JwtAuthGuard} from "../common/auth-config/guards/jwt-auth.guard";
-import {PermissionGuard} from "../common/auth-config/guards/permission.guard";
+import {UserPermissionGuard} from "../common/auth-config/guards/user.permission.guard";
 import {UsePermissions} from "../common/auth-config/decorators/permissions.decorator";
-import {UserUpdatePermissions} from "../common/auth-config/permissions/user.update.permissions";
-import {UserDeletePermissions} from "../common/auth-config/permissions/user.delete.permissions";
+import {UserUpdatePermissions} from "../common/auth-config/permissions/user/user.update.permissions";
+import {UserDeletePermissions} from "../common/auth-config/permissions/user/user.delete.permissions";
 
 
 @Controller('user')
@@ -42,7 +42,7 @@ export class UserController {
     }
 
     @Put(':id')
-    @UseGuards(JwtAuthGuard, PermissionGuard)
+    @UseGuards(JwtAuthGuard, UserPermissionGuard)
     @UsePermissions(UserUpdatePermissions)
     async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Res() res: Response): Promise<void> {
         try {
@@ -60,7 +60,7 @@ export class UserController {
     }
 
     @Delete(':id')
-    @UseGuards(JwtAuthGuard, PermissionGuard)
+    @UseGuards(JwtAuthGuard, UserPermissionGuard)
     @UsePermissions(UserDeletePermissions)
     async deleteUser(@Param('id') id: string, @Res() res: Response): Promise<void> {
         try{
