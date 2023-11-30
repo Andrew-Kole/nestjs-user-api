@@ -9,4 +9,7 @@ export enum ExceptionMessageEnum {
     VOTE_NOT_FOUND = 'Vote does not exists',
     VOTE_NOT_OWNER = 'You can change only your votes',
     NO_CHANGES = 'You have not done any changes',
+    NO_FILE_UPLOADED = 'No file to be uploaded',
+    INVALID_FILE_TYPE_OR_SIZE = 'File type or size is invalid',
+    NO_AVATAR = 'There is no avatar',
 }

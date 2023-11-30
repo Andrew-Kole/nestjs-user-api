@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 import {UserStatusEntity} from "./user-status.entity";
 import {VoteEntity} from "../../vote/vote.entity";
+import {AvatarEntity} from "../../avatar/avatar.entity";
 
 
 @Entity('users')
@@ -54,4 +55,8 @@ export class UserEntity {
 
     @OneToMany(() => VoteEntity, (vote) => vote.profile)
     votes: VoteEntity[]
+
+    @OneToOne(() => AvatarEntity, (avatar) => avatar.user, { cascade: true, nullable: true })
+    @JoinColumn()
+    avatar: AvatarEntity;
 }
