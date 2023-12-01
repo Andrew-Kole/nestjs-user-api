@@ -4,7 +4,6 @@ import {AvatarEntity} from "./avatar.entity";
 import {Repository} from "typeorm";
 import {ExceptionMessageEnum} from "../common/enums/exception.message.enum";
 import {AwsAvatarService} from "./aws.avatar.service";
-import {AWSPresignedUrlParams} from "../common/aws-config/aws.s3.connection";
 import {S3} from "aws-sdk";
 
 @Injectable()
@@ -18,7 +17,7 @@ export class AvatarService {
     async uploadAvatar(userId: number, file: Express.Multer.File) {
         const {originalname} = file;
         const key = `avatars/${originalname}`;
-        const presignedUrl = await this.awsAvatarService.generatePresignedUrl(key, AWSPresignedUrlParams);
+        const presignedUrl = await this.awsAvatarService.generatePresignedUrl(key);
         const avatar = new AvatarEntity();
         avatar.user = userId;
         avatar.key = key;
