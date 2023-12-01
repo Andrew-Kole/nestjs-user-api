@@ -1,5 +1,5 @@
 import {Injectable} from "@nestjs/common";
-import {UserRoleEnum} from "../../../enums/user.role.enum";
+import {UserRoleEnum} from "../../enums/user.role.enum";
 
 @Injectable()
 export class UserDeletePermissions{

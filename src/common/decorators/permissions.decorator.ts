@@ -1,5 +1,5 @@
 import {SetMetadata} from "@nestjs/common";
-import {VoteEntity} from "../../../vote/vote.entity";
+import {VoteEntity} from "../../vote/vote.entity";
 import {Repository} from "typeorm";
 
 export const UsePermissions = (permissionClass: new () => any ) => SetMetadata('userPermission', permissionClass);

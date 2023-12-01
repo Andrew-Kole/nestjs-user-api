@@ -1,7 +1,7 @@
 import {CanActivate, ExecutionContext, Injectable} from "@nestjs/common";
 import {Reflector} from "@nestjs/core";
 import {Repository} from "typeorm";
-import {VoteEntity} from "../../../vote/vote.entity";
+import {VoteEntity} from "../../vote/vote.entity";
 import {InjectRepository} from "@nestjs/typeorm";
 
 @Injectable()

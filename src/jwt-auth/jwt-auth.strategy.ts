@@ -1,25 +1,23 @@
 import {PassportStrategy} from "@nestjs/passport";
 import {ExtractJwt, Strategy} from "passport-jwt";
-import {JWT_SECRET_KEY} from "../common/constants/jwt.constant";
 import {JwtPayload} from "../common/auth-config/jwt-payload.interface";
 import {InjectRepository} from "@nestjs/typeorm";
 import {UserEntity} from "../user/entities/user.entity";
 import {Repository} from "typeorm";
-import {UserStatusEntity} from "../user/entities/user-status.entity";
 import {UnauthorizedException} from "@nestjs/common";
 import {ExceptionMessageEnum} from "../common/enums/exception.message.enum";
+import {ConfigService} from "@nestjs/config";
 
 
 export class JwtAuthStrategy extends PassportStrategy(Strategy) {
     constructor( @InjectRepository(UserEntity)
                  private readonly userRepository: Repository<UserEntity>,
-                 @InjectRepository(UserStatusEntity)
-                 private readonly userStatusRepository: Repository<UserStatusEntity>
+                 private readonly configService: ConfigService,
     ) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
-            secretOrKey: JWT_SECRET_KEY,
+            secretOrKey: configService.get('JWT_SECRET_KEY'),
         });
     }
 

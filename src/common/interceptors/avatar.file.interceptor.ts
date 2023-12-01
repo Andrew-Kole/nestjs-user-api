@@ -1,6 +1,7 @@
 import {CallHandler, ExecutionContext, HttpException, HttpStatus, Injectable, NestInterceptor} from "@nestjs/common";
 import {Observable} from "rxjs";
 import {ExceptionMessageEnum} from "../enums/exception.message.enum";
+import {uploadFileConfig} from "../upload-config/avatar.file.config";
 
 @Injectable()
 export class AvatarFileInterceptor implements NestInterceptor{
@@ -12,8 +13,7 @@ export class AvatarFileInterceptor implements NestInterceptor{
             throw new HttpException(ExceptionMessageEnum.NO_FILE_UPLOADED , HttpStatus.BAD_REQUEST)
         }
 
-        const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
-        const maxFileSize = 1024 * 1024 * 5;
+        const { allowedMimeTypes, maxFileSize } = uploadFileConfig;
 
         if (!allowedMimeTypes.includes(file.mimetype) || file.size > maxFileSize) {
             throw new HttpException(ExceptionMessageEnum.INVALID_FILE_TYPE_OR_SIZE, HttpStatus.BAD_REQUEST)

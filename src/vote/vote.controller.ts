@@ -1,20 +1,21 @@
 import {Body, Controller, Delete, HttpStatus, Param, Post, Put, Req, Res, UseGuards} from "@nestjs/common";
 import {Request, Response} from 'express';
 import {VoteService} from "./vote.service";
-import {JwtAuthGuard} from "../common/auth-config/guards/jwt-auth.guard";
+import {JwtAuthGuard} from "../common/guards/jwt-auth.guard";
 import {VoteDto} from "./vote.dto";
-import {UseVotePermissions} from "../common/auth-config/decorators/permissions.decorator";
-import {VoteCreatePermissions} from "../common/auth-config/permissions/vote/vote.create.permissions";
-import {VotePermissionGuard} from "../common/auth-config/guards/vote.permission.guard";
-import {VoteUpdatePermission} from "../common/auth-config/permissions/vote/vote.update.permission";
-import {VoteChanged} from "../common/auth-config/permissions/vote/vote.delete.permission";
+import {UseVotePermissions} from "../common/decorators/permissions.decorator";
+import {VoteCreatePermissions} from "../common/permissions/vote/vote.create.permissions";
+import {VotePermissionGuard} from "../common/guards/vote.permission.guard";
+import {VoteUpdatePermission} from "../common/permissions/vote/vote.update.permission";
+import {VoteChanged} from "../common/permissions/vote/vote.delete.permission";
 
 @Controller('vote')
+@UseGuards(JwtAuthGuard)
 export class VoteController {
     constructor(private readonly voteService: VoteService) {}
 
     @Post('user/:id')
-    @UseGuards(JwtAuthGuard, VotePermissionGuard)
+    @UseGuards(VotePermissionGuard)
     @UseVotePermissions(VoteCreatePermissions)
     async vote(@Param('id') profileId: number, @Body() voteDto: VoteDto, @Req() req: Request, @Res() res: Response): Promise<void>{
         const voterId = req.user['id'];
@@ -28,7 +29,7 @@ export class VoteController {
     }
 
     @Put(':id')
-    @UseGuards(JwtAuthGuard, VotePermissionGuard)
+    @UseGuards(VotePermissionGuard)
     @UseVotePermissions(VoteUpdatePermission)
     async updateVote(@Param('id') id: number, @Body() voteDto: VoteDto, @Res() res: Response): Promise<void> {
         try{
@@ -41,7 +42,7 @@ export class VoteController {
     }
 
     @Delete(':id')
-    @UseGuards(JwtAuthGuard, VotePermissionGuard)
+    @UseGuards(VotePermissionGuard)
     @UseVotePermissions(VoteChanged)
     async deleteVote(@Param('id') id: number, @Res() res: Response): Promise<void> {
         try {

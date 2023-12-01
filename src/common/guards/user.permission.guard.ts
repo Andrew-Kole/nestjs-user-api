@@ -1,10 +1,10 @@
-import {CanActivate, ExecutionContext, Injectable, NotFoundException} from "@nestjs/common";
+import {CanActivate, ExecutionContext, Injectable, UnauthorizedException} from "@nestjs/common";
 import {Reflector} from "@nestjs/core";
 import {InjectRepository} from "@nestjs/typeorm";
-import {UserStatusEntity} from "../../../user/entities/user-status.entity";
+import {UserStatusEntity} from "../../user/entities/user-status.entity";
 import {Repository} from "typeorm";
-import {UserRoleEnum} from "../../enums/user.role.enum";
-import {ExceptionMessageEnum} from "../../enums/exception.message.enum";
+import {UserRoleEnum} from "../enums/user.role.enum";
+import {ExceptionMessageEnum} from "../enums/exception.message.enum";
 
 @Injectable()
 export class UserPermissionGuard implements CanActivate{
@@ -36,7 +36,7 @@ export class UserPermissionGuard implements CanActivate{
             return userStatus?.role;
         }
         catch (error) {
-            throw new NotFoundException(ExceptionMessageEnum.USER_NOT_FOUND);
+            throw new UnauthorizedException(ExceptionMessageEnum.USER_NOT_FOUND);
         }
     }
 }

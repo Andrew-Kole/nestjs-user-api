@@ -1,7 +1,7 @@
 import {ForbiddenException, Injectable} from "@nestjs/common";
-import {VoteEntity} from "../../../../vote/vote.entity";
+import {VoteEntity} from "../../../vote/vote.entity";
 import {Repository} from "typeorm";
-import {ExceptionMessageEnum} from "../../../enums/exception.message.enum";
+import {ExceptionMessageEnum} from "../../enums/exception.message.enum";
 import {InjectRepository} from "@nestjs/typeorm";
 
 @Injectable()

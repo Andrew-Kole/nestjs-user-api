@@ -1,12 +1,13 @@
 import {Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res, UseGuards} from "@nestjs/common";
 import {Response} from 'express';
 import {UserService} from "./user.service";
-import {CreateUserDto, UpdateUserDto} from "./user.dto";
-import {JwtAuthGuard} from "../common/auth-config/guards/jwt-auth.guard";
-import {UserPermissionGuard} from "../common/auth-config/guards/user.permission.guard";
-import {UsePermissions} from "../common/auth-config/decorators/permissions.decorator";
-import {UserUpdatePermissions} from "../common/auth-config/permissions/user/user.update.permissions";
-import {UserDeletePermissions} from "../common/auth-config/permissions/user/user.delete.permissions";
+import {UpdateUserDto} from "./dto/update.user.dto";
+import {JwtAuthGuard} from "../common/guards/jwt-auth.guard";
+import {UserPermissionGuard} from "../common/guards/user.permission.guard";
+import {UsePermissions} from "../common/decorators/permissions.decorator";
+import {UserUpdatePermissions} from "../common/permissions/user/user.update.permissions";
+import {UserDeletePermissions} from "../common/permissions/user/user.delete.permissions";
+import {CreateUserDto} from "./dto/create.user.dto";
 
 
 @Controller('user')
