@@ -26,6 +26,9 @@ export class UserController {
             });
         }
         catch (error) {
+            if(error.status){
+                res.status(error.status).json({message: error.message});
+            }
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: error.message});
         }
     }
@@ -56,7 +59,13 @@ export class UserController {
             });
         }
         catch (error) {
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: error.message});
+            if(error.status) {
+                res.status(error.status).json({ message: error.message });
+            }
+            else {
+                res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: error.message});
+            }
+
         }
     }
 
@@ -69,6 +78,9 @@ export class UserController {
             res.status(HttpStatus.NO_CONTENT).send();
         }
         catch (error) {
+            if(error.status) {
+                res.status(error.status).json({ message: error.message });
+            }
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message })
         }
     }
