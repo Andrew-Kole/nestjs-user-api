@@ -247,9 +247,7 @@ describe('UserController e2e', () => {
                 .set('Authorization', `Bearer ${basicUser.token}`)
                 .expect(HttpStatus.NOT_FOUND);
             expect(res.body).toEqual({
-                error: 'Not Found',
                 message: ExceptionMessageEnum.USER_NOT_FOUND,
-                statusCode: 404,
             })
         });
 
@@ -262,21 +260,18 @@ describe('UserController e2e', () => {
                .expect(HttpStatus.FORBIDDEN);
 
            expect(res.body).toEqual({
-               error: 'Forbidden',
                message: ExceptionMessageEnum.USER_IS_BANNED,
-               statusCode: 403,
            })
         });
 
         it('user tries to get info but unexpected error happened, status 500', async () => {
-            mockUserService.getUserById.mockRejectedValueOnce(new Error());
+            mockUserService.getUserById.mockRejectedValueOnce(new Error('Unexpected error'));
             const res = await request(app.getHttpServer())
                 .get(url)
                 .set('Authorization', `Bearer ${basicUser.token}`)
                 .expect(HttpStatus.INTERNAL_SERVER_ERROR);
             expect(res.body).toEqual({
-                message: 'Internal server error',
-                statusCode: 500,
+                message: 'Unexpected error',
             })
         });
     });
@@ -376,14 +371,14 @@ describe('UserController e2e', () => {
         const url = '/user/1';
 
         it('user deletes himself gets 204', async () => {
-            const res = await request(app.getHttpServer())
+            await request(app.getHttpServer())
                 .delete(url)
                 .set('Authorization', `Bearer ${basicUser.token}`)
                 .expect(HttpStatus.NO_CONTENT);
         });
 
         it('admin deletes basic user', async () => {
-            const res = await request(app.getHttpServer())
+            await request(app.getHttpServer())
                 .delete(url)
                 .set('Authorization', `Bearer ${adminUser.token}`)
                 .expect(HttpStatus.NO_CONTENT);
@@ -403,6 +398,7 @@ describe('UserController e2e', () => {
                 .delete(url)
                 .set('Authorization', `Bearer ${moderUser.token}`)
                 .expect(HttpStatus.FORBIDDEN);
+            expect(res.body.message).toEqual({ message: 'Forbidden resource' })
         });
     });
 });

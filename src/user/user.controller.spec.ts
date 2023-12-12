@@ -67,11 +67,6 @@ describe('UserController', () => {
 
            (userService.register as jest.Mock).mockResolvedValue(registeredUser as UserEntity);
 
-           // const res: Partial<Response> = {
-           //     status: jest.fn().mockReturnThis(),
-           //     json: jest.fn(),
-           // };
-
            await userController.register(createUserDto, res as Response);
 
            expect(userService.register).toHaveBeenCalledWith(createUserDto);
@@ -89,45 +84,24 @@ describe('UserController', () => {
         });
 
         it('it should handle the error from db and return status 409 and message: User with this nickname already exists, choose another nickname!', async () => {
-            (userService.register as jest.Mock).mockRejectedValue({
-               code: '23505',
-            });
+            (userService.register as jest.Mock).mockRejectedValue(new ConflictException(ExceptionMessageEnum.USER_ALREADY_EXISTS));
 
-            // const res: Partial<Response> = {
-            //     status: jest.fn().mockReturnThis(),
-            //     json: jest.fn(),
-            // };
+            await expect(userController.register(createUserDto, res as Response)).resolves.toEqual(undefined);
 
-            try {
-                await userController.register(createUserDto, res as Response);
-            }
-            catch (error) {
-                expect(error).toBeInstanceOf(ConflictException);
-                expect(error.message).toEqual(ExceptionMessageEnum.USER_ALREADY_EXISTS);
-                expect(userService.register).toHaveBeenCalledWith(createUserDto);
-                expect(res.status).toHaveBeenCalledWith(HttpStatus.CONFLICT);
-                expect(res.json).toHaveBeenCalledWith({ message: ExceptionMessageEnum.USER_ALREADY_EXISTS });
-            }
+            expect(userService.register).toHaveBeenCalledWith(createUserDto);
+            expect(res.status).toHaveBeenCalledWith(HttpStatus.CONFLICT);
+            expect(res.json).toHaveBeenCalledWith({ message: ExceptionMessageEnum.USER_ALREADY_EXISTS });
+
         });
 
         it('handles other errors with status 500, and error message in response', async () => {
             (userService.register as jest.Mock).mockRejectedValue(new Error('Unexpected error'));
 
-            // const res: Partial<Response> = {
-            //     status: jest.fn().mockReturnThis(),
-            //     json: jest.fn(),
-            // };
+            await expect(userController.register(createUserDto, res as Response)).resolves.toEqual(undefined);
 
-            try {
-                await userController.register(createUserDto, res as Response);
-            }
-            catch (error) {
-                expect(error).toBeInstanceOf(Error);
-                expect(error.message).toEqual('Unexpected error');
-                expect(userService.register).toHaveBeenCalledWith(createUserDto);
-                expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
-                expect(res.json).toHaveBeenCalledWith({ message: 'Unexpected error' });
-            }
+            expect(userService.register).toHaveBeenCalledWith(createUserDto);
+            expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Unexpected error' });
         });
     });
 
@@ -166,37 +140,24 @@ describe('UserController', () => {
         it('returns 404 if user not found or deleted', async () => {
             jest.spyOn(userService, "getUserById").mockRejectedValue(new NotFoundException(ExceptionMessageEnum.USER_NOT_FOUND));
 
-            try{
-                await expect(userController.getUserById(userId, res as Response)).rejects.toThrow(NotFoundException);
+            await expect(userController.getUserById(userId, res as Response)).resolves.toEqual(undefined);
 
-                expect(userService.getUserById).toHaveBeenCalledWith(Number(userId));
-            }
-            catch (error) {
-                expect(res.status).toHaveBeenCalledWith(HttpStatus.NOT_FOUND);
-                expect(res.json).toHaveBeenCalledWith({
-                    message: ExceptionMessageEnum.USER_NOT_FOUND,
-                    error: 'Not Found',
-                    statusCode: HttpStatus.NOT_FOUND,
-                });
-            }
+            expect(userService.getUserById).toHaveBeenCalledWith(Number(userId));
+            expect(res.status).toHaveBeenCalledWith(HttpStatus.NOT_FOUND);
+            expect(res.json).toHaveBeenCalledWith({
+                message: ExceptionMessageEnum.USER_NOT_FOUND,
+            });
         });
         it('if users have isActive false it returns message is banned and status 401', async () => {
             jest.spyOn(userService, 'getUserById').mockRejectedValue(new ForbiddenException(ExceptionMessageEnum.USER_IS_BANNED));
 
-            try {
-                await expect(userController.getUserById(userId, res as Response)).rejects.toThrow(ForbiddenException);
-                expect(userService.getUserById).toHaveBeenCalledWith(Number(userId));
-            }
-            catch (error) {
-                expect(error).toBeInstanceOf(ForbiddenException);
-                expect(error.message).toEqual(ExceptionMessageEnum.USER_IS_BANNED);
-                expect(res.status).toHaveBeenCalledWith(HttpStatus.FORBIDDEN);
-                expect(res.json).toHaveBeenCalledWith({
-                    message: ExceptionMessageEnum.USER_IS_BANNED,
-                    error: 'Unauthorized',
-                    statusCode: HttpStatus.FORBIDDEN,
-                });
-            }
+            await expect(userController.getUserById(userId, res as Response)).resolves.toEqual(undefined);
+
+            expect(userService.getUserById).toHaveBeenCalledWith(Number(userId));
+            expect(res.status).toHaveBeenCalledWith(HttpStatus.FORBIDDEN);
+            expect(res.json).toHaveBeenCalledWith({
+                message: ExceptionMessageEnum.USER_IS_BANNED,
+            });
         });
     });
     describe('updateUser', () => {
@@ -207,62 +168,47 @@ describe('UserController', () => {
         it('returns 404 if user not found', async () => {
             jest.spyOn(userService, 'updateUser').mockRejectedValue(new NotFoundException(ExceptionMessageEnum.USER_NOT_FOUND));
 
-            try {
-                await expect(userController.updateUser(userId, updateUserDto as UpdateUserDto, res as Response)).rejects.toThrow(NotFoundException);
-                expect(userService.updateUser).toHaveBeenCalledWith(Number(userId), updateUserDto);
-            }
-            catch (error) {
-                expect(res.status).toHaveBeenCalledWith(HttpStatus.NOT_FOUND);
-                expect(res.json).toHaveBeenCalledWith({
-                    message: ExceptionMessageEnum.USER_NOT_FOUND,
-                });
-            }
+            await expect(userController.updateUser(userId, updateUserDto as UpdateUserDto, res as Response)).resolves.toEqual(undefined);
+
+            expect(userService.updateUser).toHaveBeenCalledWith(Number(userId), updateUserDto);
+            expect(res.status).toHaveBeenCalledWith(HttpStatus.NOT_FOUND);
+            expect(res.json).toHaveBeenCalledWith({
+                message: ExceptionMessageEnum.USER_NOT_FOUND,
+            });
         });
         it('returns 403 if user is banned (isActive=false) and message to contact admin', async () => {
             jest.spyOn(userService, 'updateUser').mockRejectedValue(new ForbiddenException(ExceptionMessageEnum.USER_IS_BANNED));
 
-            try {
-                await expect(userController.updateUser(userId, updateUserDto as UpdateUserDto, res as Response)).rejects.toThrow(ForbiddenException);
-                expect(userService.updateUser).toHaveBeenCalledWith(Number(userId), updateUserDto);
-            }
-            catch (error) {
-                expect(res.status).toHaveBeenCalledWith(HttpStatus.FORBIDDEN);
-                expect(res.json).toHaveBeenCalledWith({
-                    message: ExceptionMessageEnum.USER_IS_BANNED,
-                });
-            }
+            await expect(userController.updateUser(userId, updateUserDto as UpdateUserDto, res as Response)).resolves.toEqual(undefined);
+
+            expect(userService.updateUser).toHaveBeenCalledWith(Number(userId), updateUserDto);
+            expect(res.status).toHaveBeenCalledWith(HttpStatus.FORBIDDEN);
+            expect(res.json).toHaveBeenCalledWith({
+                message: ExceptionMessageEnum.USER_IS_BANNED,
+            });
         });
         it('returns 409 and message that user already exists, handles error 23505 from db and throws conflict exception', async () => {
-            jest.spyOn(userService, 'updateUser').mockRejectedValue({
-                code: '23505',
-            });
+            jest.spyOn(userService, 'updateUser').mockRejectedValue(new ConflictException(ExceptionMessageEnum.USER_ALREADY_EXISTS));
 
-            try{
-                await userController.updateUser(userId, updateUserDto as UpdateUserDto, res as Response);
-                expect(userService.updateUser).toHaveBeenCalledWith(Number(userId), updateUserDto);
-            }
-            catch (error) {
-                expect(error).toBeInstanceOf(ConflictException);
-                expect(error.message).toEqual(ExceptionMessageEnum.USER_ALREADY_EXISTS);
-                expect(res.status).toHaveBeenCalledWith(HttpStatus.CONFLICT);
-                expect(res.json).toHaveBeenCalledWith({
-                    message: ExceptionMessageEnum.USER_ALREADY_EXISTS,
-                });
-            }
+            await expect(userController.updateUser(userId, updateUserDto as UpdateUserDto, res as Response)).resolves.toEqual(undefined);
+
+            expect(userService.updateUser).toHaveBeenCalledWith(Number(userId), updateUserDto);
+            expect(res.status).toHaveBeenCalledWith(HttpStatus.CONFLICT);
+            expect(res.json).toHaveBeenCalledWith({
+                message: ExceptionMessageEnum.USER_ALREADY_EXISTS,
+            });
         });
         it('returns 500 and error message if unexpected error got', async () => {
             jest.spyOn(userService, 'updateUser').mockRejectedValue(new Error('Unexpected error'));
 
-            try {
-                await userController.updateUser(userId, updateUserDto as UpdateUserDto, res as Response);
-                expect(userService.updateUser).toHaveBeenCalledWith(Number(userId), updateUserDto);
-            }
-            catch (error) {
-                expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
-                expect(res.json).toHaveBeenCalledWith({
-                    message: 'Unexpected error',
-                });
-            }
+            await expect(userController.updateUser(userId, updateUserDto as UpdateUserDto, res as Response)).resolves.toEqual(undefined);
+
+            expect(userService.updateUser).toHaveBeenCalledWith(Number(userId), updateUserDto);
+            expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+            expect(res.json).toHaveBeenCalledWith({
+                message: 'Unexpected error',
+            });
+
         });
         it('successfully updates user', async () => {
             const updatedUser = {
@@ -305,30 +251,24 @@ describe('UserController', () => {
         it('no user it returns 404 and message not found user', async () => {
             jest.spyOn(userService, 'deleteUser').mockRejectedValue(new NotFoundException(ExceptionMessageEnum.USER_NOT_FOUND));
 
-            try {
-                await expect(userController.deleteUser(userId, res as Response)).rejects.toThrow(NotFoundException);
-                expect(userService.deleteUser).toHaveBeenCalledWith(Number(userId));
-            }
-            catch (error) {
-                expect(res.status).toHaveBeenCalledWith(HttpStatus.NOT_FOUND);
-                expect(res.json).toHaveBeenCalledWith({
-                    message: ExceptionMessageEnum.USER_NOT_FOUND,
-                });
-            }
+            await expect(userController.deleteUser(userId, res as Response)).resolves.toEqual(undefined);
+
+            expect(userService.deleteUser).toHaveBeenCalledWith(Number(userId));
+            expect(res.status).toHaveBeenCalledWith(HttpStatus.NOT_FOUND);
+            expect(res.json).toHaveBeenCalledWith({
+                message: ExceptionMessageEnum.USER_NOT_FOUND,
+            });
         });
         it('handles unexpected eroor and return 500', async () => {
             jest.spyOn(userService, 'deleteUser').mockRejectedValue(new Error('Unexpected error'));
 
-            try{
-                await expect(userController.deleteUser(userId, res as Response)).rejects.toThrow(Error);
-                expect(userService.deleteUser).toHaveBeenCalledWith(Number(userId));
-            }
-            catch (error) {
-                expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
-                expect(res.json).toHaveBeenCalledWith({
-                    message: 'Unexpected error',
-                });
-            }
+            await expect(userController.deleteUser(userId, res as Response)).resolves.toEqual(undefined);
+
+            expect(userService.deleteUser).toHaveBeenCalledWith(Number(userId));
+            expect(res.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+            expect(res.json).toHaveBeenCalledWith({
+                message: 'Unexpected error',
+            });
         });
         it('successfully deletes user and returns 201', async () => {
             jest.spyOn(userService, 'deleteUser').mockResolvedValue(undefined);
@@ -339,5 +279,3 @@ describe('UserController', () => {
         });
     });
 });
-
-

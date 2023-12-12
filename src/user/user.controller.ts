@@ -36,13 +36,22 @@ export class UserController {
     @Get(':id')
     @UseGuards(JwtAuthGuard)
     async getUserById(@Param('id') id: string, @Res() res: Response): Promise<void>{
-        const user = await this.userService.getUserById(Number(id));
-        const { password, status, ...userWithoutSensitiveInfo} = user;
-        res.status(HttpStatus.OK).json({...userWithoutSensitiveInfo,
-            createdAt: userWithoutSensitiveInfo.createdAt.toISOString(),
-            role: status.role,
-            isActive: status.isActive,
-        });
+        try {
+            const user = await this.userService.getUserById(Number(id));
+            const { password, status, ...userWithoutSensitiveInfo} = user;
+            res.status(HttpStatus.OK).json({...userWithoutSensitiveInfo,
+                createdAt: userWithoutSensitiveInfo.createdAt.toISOString(),
+                role: status.role,
+                isActive: status.isActive,
+            });
+        }
+        catch (error) {
+            if (error.status) {
+                res.status(error.status).json({ message: error.message });
+            }
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message });
+        }
+
     }
 
     @Put(':id')
