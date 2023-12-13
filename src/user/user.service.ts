@@ -35,15 +35,21 @@ export class UserService {
     }
 
     async getUserById(id: number): Promise<UserEntity | undefined> {
-        const user = await this.userRepository.findOne( {where: { id }, relations: ['status'] });
-        if (!user || user.status.isDeleted) {
-            throw new NotFoundException(ExceptionMessageEnum.USER_NOT_FOUND);
+        try {
+            const user = await this.userRepository.findOne( {where: { id }, relations: ['status'] });
+            if (!user || user.status.isDeleted) {
+                throw new NotFoundException(ExceptionMessageEnum.USER_NOT_FOUND);
+            }
+            if (!user.status.isActive){
+                throw new ForbiddenException(ExceptionMessageEnum.USER_IS_BANNED)
+            }
+
+            return user;
         }
-        if (!user.status.isActive){
-            throw new ForbiddenException(ExceptionMessageEnum.USER_IS_BANNED)
+        catch (error) {
+            throw error;
         }
 
-        return user;
     }
 
     private async getUserByIdForUpdate(id: number): Promise<UserEntity | undefined> {
