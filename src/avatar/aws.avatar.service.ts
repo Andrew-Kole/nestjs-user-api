@@ -18,4 +18,9 @@ export class AwsAvatarService {
         const data = await s3.getObject(params).promise();
         return data.Body;
     }
+
+    async uploadFileToS3(params) {
+        params = {...params, Bucket: this.s3Provider.AWS_S3_BUCKET_NAME};
+        return this.s3Provider.s3.upload(params).promise();
+    }
 }

@@ -23,7 +23,10 @@ export class VoteCreatePermissions {
     }
 
     private async doubleVoteCheck (userId: number, targetUserId: number): Promise<boolean> {
+        console.log(userId)
+        console.log(targetUserId)
         const existingVote = await this.voteRepository.findOne({ where: { voter:userId, profile: targetUserId } });
+        console.log(existingVote);
         if(existingVote) {
             throw new ForbiddenException(ExceptionMessageEnum.DOUBLE_VOTE);
         }

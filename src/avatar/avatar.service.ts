@@ -14,17 +14,18 @@ export class AvatarService {
         private readonly awsAvatarService: AwsAvatarService,
     ) {}
 
-    async uploadAvatar(userId: number, file: Express.Multer.File) {
-        const {originalname} = file;
-        const key = `avatars/${originalname}`;
+    async uploadAvatar(userId: number, file) {
+        const key = `avatars/${file.filename}`;
         const presignedUrl = await this.awsAvatarService.generatePresignedUrl(key);
         const avatar = new AvatarEntity();
         avatar.user = userId;
         avatar.key = key;
-        return {
-            avatar: this.avatarRepository.save(avatar),
-            uploadUrl: presignedUrl,
-        };
+        await this.awsAvatarService.uploadFileToS3({
+            Key: presignedUrl,
+            Body: file.createReadStream(),
+            ContentType: file.mimetype,
+        });
+        return this.avatarRepository.save(avatar);
     }
 
     async getAvatarKey(id: number): Promise<S3.Body> {

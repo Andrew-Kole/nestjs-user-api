@@ -3,10 +3,10 @@ import {JwtService} from "@nestjs/jwt";
 import {Repository} from "typeorm";
 import {UserEntity} from "../user/entities/user.entity";
 import {UserStatusEntity} from "../user/entities/user-status.entity";
-import {LoginDto} from "./jwt-auth.dto";
 import {ExceptionMessageEnum} from "../common/enums/exception.message.enum";
 import {PasswordUtils} from "../common/utils/password.utils";
 import {InjectRepository} from "@nestjs/typeorm";
+import {LoginInput} from "./jwt-auth.input";
 
 @Injectable()
 export class JwtAuthService {
@@ -16,7 +16,7 @@ export class JwtAuthService {
                 @InjectRepository(UserStatusEntity)
                 private readonly userStatusRepository: Repository<UserStatusEntity>) {}
 
-    async login(loginDto: LoginDto): Promise<{ accessToken: string, refreshToken: string }> {
+    async login(loginDto: LoginInput): Promise<{ accessToken: string, refreshToken: string }> {
         const user = await this.validateUser(loginDto);
         const accessToken = await this.generateAccessToken(user);
         const refreshToken = await PasswordUtils.hashPassword(accessToken);
@@ -26,7 +26,7 @@ export class JwtAuthService {
         return { accessToken, refreshToken };
     }
 
-    private async validateUser(loginDto: LoginDto): Promise<UserEntity>{
+    private async validateUser(loginDto: LoginInput): Promise<UserEntity>{
         const user = await this.getByNickname(loginDto.nickname);
         if (!user || user.status.isDeleted) {
             throw new UnauthorizedException(ExceptionMessageEnum.USER_NOT_FOUND);

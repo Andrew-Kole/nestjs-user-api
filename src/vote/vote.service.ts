@@ -3,9 +3,9 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {VoteEntity} from "./vote.entity";
 import {Repository} from "typeorm";
 import {UserEntity} from "../user/entities/user.entity";
-import {VoteDto} from "./vote.dto";
 import {ExceptionMessageEnum} from "../common/enums/exception.message.enum";
 import {RATING_DELETE_VOTE_MULTIPLIER, RATING_UPDATE_VOTE_MULTIPLIER} from "../common/constants/vote.constant";
+import {VoteInput} from "./vote.input";
 
 @Injectable()
 export class VoteService {
@@ -15,7 +15,7 @@ export class VoteService {
         @InjectRepository(UserEntity)
         private readonly userRepository: Repository<UserEntity>,
     ) {}
-    async createVote(profileId: number, voterId: number, voteDto: VoteDto): Promise<VoteEntity> {
+    async createVote(profileId: number, voterId: number, voteDto: VoteInput): Promise<VoteEntity> {
         await this.updateUserRating(profileId, voteDto.voteValue);
         const vote = this.voteRepository.create({
             profile: profileId,
@@ -26,7 +26,7 @@ export class VoteService {
         return this.voteRepository.save(vote);
     }
 
-    async updateVote(id: number, voteDto: VoteDto): Promise<VoteEntity> {
+    async updateVote(id: number, voteDto: VoteInput): Promise<VoteEntity> {
         const vote = await this.getVoteById(id);
         await this.updateUserRating(vote.profile, voteDto.voteValue * RATING_UPDATE_VOTE_MULTIPLIER);
 

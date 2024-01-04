@@ -3,6 +3,7 @@ import {Reflector} from "@nestjs/core";
 import {Repository} from "typeorm";
 import {VoteEntity} from "../../vote/vote.entity";
 import {InjectRepository} from "@nestjs/typeorm";
+import {GqlExecutionContext} from "@nestjs/graphql";
 
 @Injectable()
 export class VotePermissionGuard implements CanActivate {
@@ -12,13 +13,15 @@ export class VotePermissionGuard implements CanActivate {
         private readonly voteRepository: Repository<VoteEntity>,
         ) {}
 
-    async canActivate(ctx: ExecutionContext): Promise<boolean> {
-        const req = ctx.switchToHttp().getRequest();
-        const userId = req.user.id;
-        const targetUserId = +req.params.id;
-        const voteValue = req.body.voteValue;
+    async canActivate(context: ExecutionContext): Promise<boolean> {
+        const gqlContext = GqlExecutionContext.create(context)
+        const args = gqlContext.getArgs();
+        const ctx = gqlContext.getContext().req;
+        const userId = ctx.user.id;
+        const targetUserId = +args.id;
+        const voteValue = args.voteDto?.voteValue;
 
-        const votePermission =this.reflector.get<new (voteRepository: Repository<VoteEntity>) => any>('votePermission', ctx.getHandler());
+        const votePermission =this.reflector.get<new (voteRepository: Repository<VoteEntity>) => any>('votePermission', context.getHandler());
         if (votePermission) {
             const permissionInstance = new votePermission(this.voteRepository);
             return permissionInstance.checkPermissions(userId, targetUserId, voteValue);
