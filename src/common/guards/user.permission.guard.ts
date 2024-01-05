@@ -5,6 +5,7 @@ import {UserStatusEntity} from "../../user/entities/user-status.entity";
 import {Repository} from "typeorm";
 import {UserRoleEnum} from "../enums/user.role.enum";
 import {ExceptionMessageEnum} from "../enums/exception.message.enum";
+import {GqlExecutionContext} from "@nestjs/graphql";
 
 @Injectable()
 export class UserPermissionGuard implements CanActivate{
@@ -14,18 +15,20 @@ export class UserPermissionGuard implements CanActivate{
         private readonly userStatusRepository: Repository<UserStatusEntity>
     ) {}
 
-    async canActivate(ctx: ExecutionContext): Promise<boolean> {
-        const req = ctx.switchToHttp().getRequest();
-        const userId = req.user.id;
-        const userRole = req.user.status.role;
-        const targetUserId = +req.params.id;
+    async canActivate(context: ExecutionContext): Promise<boolean> {
+        const gqlContext = GqlExecutionContext.create(context)
+        const args = gqlContext.getArgs();
+        const ctx = gqlContext.getContext().req;
+        const userId = ctx.user.id;
+        const userRole = ctx.user.status.role;
+        const targetUserId = +args.id;
 
-        const userPermission = this.reflector.get<new () => any>('userPermission', ctx.getHandler());
+        const userPermission = this.reflector.get<new () => any>('userPermission', context.getHandler());
 
         if (userPermission) {
             const targetUserRole = await this.getTargetUserRole(targetUserId);
             const permissionInstance = new userPermission();
-            return permissionInstance.checkPermissions(userId, userRole, targetUserId, targetUserRole, req.body);
+            return permissionInstance.checkPermissions(userId, userRole, targetUserId, targetUserRole, args.updateUserDto);
         }
         return false;
     }

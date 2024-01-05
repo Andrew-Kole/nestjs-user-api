@@ -2,12 +2,12 @@ import { Module } from '@nestjs/common';
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {UserEntity} from "../user/entities/user.entity";
 import {UserStatusEntity} from "../user/entities/user-status.entity";
-import {JwtAuthController} from "./jwt-auth.controller";
 import {JwtAuthService} from "./jwt-auth.service";
 import {JwtModule} from "@nestjs/jwt";
 import {JwtAuthStrategy} from "./jwt-auth.strategy";
 import {PassportModule} from "@nestjs/passport";
 import {ConfigService} from "@nestjs/config";
+import {JwtAuthResolver} from "./jwt-auth.resolver";
 
 @Module({
     imports: [
@@ -23,7 +23,6 @@ import {ConfigService} from "@nestjs/config";
             }),
         }),
     ],
-    controllers: [JwtAuthController],
-    providers: [JwtAuthService, JwtAuthStrategy],
+    providers: [JwtAuthService, JwtAuthStrategy, JwtAuthResolver],
 })
 export class JwtAuthModule {}

@@ -5,6 +5,7 @@ import { JwtAuthModule } from './jwt-auth/jwt-auth.module';
 import { VoteModule } from './vote/vote.module';
 import { AvatarModule } from './avatar/avatar.module';
 import {ConfigModule, ConfigService} from "@nestjs/config";
+import { GraphqlModule } from './graphql/graphql.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import {ConfigModule, ConfigService} from "@nestjs/config";
       JwtAuthModule,
       VoteModule,
       AvatarModule,
+      GraphqlModule,
   ],
 })
 export class AppModule {}

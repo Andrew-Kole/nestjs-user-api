@@ -3,10 +3,10 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {Repository} from "typeorm";
 import {UserEntity} from "./entities/user.entity";
 import {PasswordUtils} from "../common/utils/password.utils";
-import {UpdateUserDto} from "./dto/update.user.dto";
 import {UserStatusEntity} from "./entities/user-status.entity";
 import {ExceptionMessageEnum} from "../common/enums/exception.message.enum";
-import {CreateUserDto} from "./dto/create.user.dto";
+import {CreateUserInput} from "./dto/create.user.input";
+import {UpdateUserInput} from "./dto/update.user.input";
 
 @Injectable()
 export class UserService {
@@ -17,7 +17,7 @@ export class UserService {
        private readonly userStatusRepository: Repository<UserStatusEntity>
     ) {}
 
-    async register(createUserDto: CreateUserDto): Promise<UserEntity>{
+    async register(createUserDto: CreateUserInput): Promise<UserEntity>{
         try{
             const hashedPassword = await PasswordUtils.hashPassword(createUserDto.password);
             const newUser = this.userRepository.create({ ...createUserDto, password: hashedPassword });
@@ -56,7 +56,7 @@ export class UserService {
         return await this.userRepository.findOne( {where: { id }, relations: ['status'] });
     }
 
-    async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<UserEntity | undefined> {
+    async updateUser(id: number, updateUserDto: UpdateUserInput): Promise<UserEntity | undefined> {
         try {
             const user = await this.getUserByIdForUpdate(id);
             if (!user || user.status.isDeleted) {

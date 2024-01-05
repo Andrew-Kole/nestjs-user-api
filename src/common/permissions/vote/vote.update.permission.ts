@@ -1,4 +1,4 @@
-import {ForbiddenException, Injectable} from "@nestjs/common";
+import {ForbiddenException, Injectable, NotFoundException} from "@nestjs/common";
 import {InjectRepository} from "@nestjs/typeorm";
 import {VoteEntity} from "../../../vote/vote.entity";
 import {Repository} from "typeorm";
@@ -13,6 +13,9 @@ export class VoteUpdatePermission {
 
     async checkPermissions(userId: number, voteId: number, voteValue: number): Promise<boolean> {
         const vote = await this.voteRepository.findOne({where: { id: voteId } });
+        if(!vote){
+            throw new NotFoundException(ExceptionMessageEnum.VOTE_NOT_FOUND);
+        }
         if(userId !== vote.voter) {
             throw new ForbiddenException(ExceptionMessageEnum.VOTE_NOT_OWNER);
         }

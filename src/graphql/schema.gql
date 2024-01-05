@@ -1,0 +1,95 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AuthResponse {
+  accessToken: String!
+  refreshToken: String!
+}
+
+type AvatarEntity {
+  createdAt: DateTime!
+  id: ID!
+  key: String!
+  user: ID!
+}
+
+input CreateUserInput {
+  firstName: String!
+  lastName: String!
+  nickname: String!
+  password: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+input LoginInput {
+  nickname: String!
+  password: String!
+}
+
+type Mutation {
+  deleteUser(id: ID!): Boolean!
+  deleteVote(id: Int!): Boolean!
+  login(loginDto: LoginInput!): AuthResponse!
+  register(createUserDto: CreateUserInput!): UserEntity!
+  updateUser(id: ID!, updateUserDto: UpdateUserInput!): UserEntity!
+  updateVote(id: Int!, voteDto: VoteInput!): VoteEntity!
+  uploadAvatar(file: Upload!): AvatarEntity!
+  vote(id: Int!, voteDto: VoteInput!): VoteEntity!
+}
+
+type Query {
+  getUserById(id: ID!): UserEntity!
+}
+
+input UpdateUserInput {
+  firstName: String
+  isActive: Boolean
+  lastName: String
+  nickname: String
+  password: String
+  role: String
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+type UserEntity {
+  avatar: AvatarEntity
+  createdAt: DateTime!
+  deletedAt: DateTime!
+  firstName: String!
+  id: ID!
+  lastName: String!
+  nickname: String!
+  password: String!
+  rating: Float!
+  status: UserStatusEntity!
+  updatedAt: DateTime!
+  votes: VoteEntity!
+}
+
+type UserStatusEntity {
+  id: ID!
+  isActive: Boolean!
+  isDeleted: Boolean!
+  refreshToken: String
+  role: String!
+  user: UserEntity!
+}
+
+type VoteEntity {
+  id: ID!
+  profile: ID!
+  voteDate: DateTime!
+  voteValue: Float!
+  voter: ID!
+}
+
+input VoteInput {
+  voteValue: Int!
+}
